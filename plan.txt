@@ -1,0 +1,4 @@
+tool to generate component with sources
+tool to generate what could be in the interface
+tool to generate what is needed outside
+from what is needed outside find a component
