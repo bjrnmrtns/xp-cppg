@@ -1,4 +1,4 @@
-project(cmgen)
+project(cppg)
 
 set(CMAKE_CXX_STANDARD 17)
 
