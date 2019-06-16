@@ -55,8 +55,8 @@ namespace {
         : parts(split(line, "/")) 
         , dirs(parts_to_dirs(parts))
         , filename(to_filename(line))
-        , basefilename(to_filename(line))
-        , extension(to_extension(line)) {
+        , basefilename(to_basename(filename))
+        , extension(filename) {
         }
         const std::vector<std::string_view> parts;
         std::vector<std::string_view> dirs;
