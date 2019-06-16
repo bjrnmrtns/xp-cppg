@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <fstream>
 #include <optional>
 #include <vector>
@@ -16,7 +17,7 @@ namespace {
         return std::string(file_contents.data(), file_size);
     }
     
-    std::vector<std::string_view> split(std::string_view input, std::string_view delims) {
+    std::vector<std::string_view> split(const std::string_view input, const std::string_view delims) {
         std::vector<std::string_view> output;
         std::string_view::size_type first = 0;
         std::string_view::size_type pos = 0;
@@ -29,17 +30,54 @@ namespace {
         return output;
     }
 
-    std::vector<std::string_view> tree_lines(std::string_view input) {
+    std::vector<std::string_view> tree_to_lines(const std::string_view input) {
         return split(input, "\r\n");
+    }
+
+    std::string_view to_extension(const std::string_view str) {
+        assert(false);
+    }
+    
+    std::string_view to_filename(const std::string_view str) {
+        assert(false);
+    }
+
+    std::string_view to_basename(const std::string_view str) {
+        assert(false);
+    }
+
+    std::vector<std::string_view> parts_to_dirs(const std::vector<std::string_view> parts) {
+        assert(false);
+    }
+
+    struct file {
+        file(const std::string_view line)
+        : parts(split(line, "/")) 
+        , dirs(parts_to_dirs(parts))
+        , filename(to_filename(line))
+        , basefilename(to_filename(line))
+        , extension(to_extension(line)) {
+        }
+        const std::vector<std::string_view> parts;
+        std::vector<std::string_view> dirs;
+        std::string_view filename;
+        std::string_view basefilename;
+        std::string_view extension;
+    };
+
+    std::vector<file> lines_to_files(const std::vector<std::string_view>& lines) {
+        std::vector<file> output;
+        std::for_each(lines.cbegin(), lines.cend(), [&output](auto& line){ output.push_back(file(line)); });
+        return output;
     }
 }
 
 int main()
 {
     const std::string tree = read_file("tree");
-    const auto lines = tree_lines(tree);
+    const auto lines = tree_to_lines(tree);
+    const auto files = lines_to_files(lines);
     for(auto x: lines) {
-        std::cout << x;
     }
     return 0;
 }
