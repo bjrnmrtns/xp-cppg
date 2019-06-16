@@ -33,12 +33,12 @@ namespace {
     std::vector<std::string_view> tree_to_lines(const std::string_view input) {
         return split(input, "\r\n");
     }
+    
+    std::string_view to_filename(const std::vector<std::string_view>& parts) {
+        return parts.size() > 0 ? parts[parts.size() - 1] : "";
+    }
 
     std::string_view to_extension(const std::string_view str) {
-        assert(false);
-    }
-    
-    std::string_view to_filename(const std::string_view str) {
         assert(false);
     }
 
@@ -54,7 +54,7 @@ namespace {
         file(const std::string_view line)
         : parts(split(line, "/")) 
         , dirs(parts_to_dirs(parts))
-        , filename(to_filename(line))
+        , filename(to_filename(parts))
         , basefilename(to_basename(filename))
         , extension(filename) {
         }
