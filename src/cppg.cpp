@@ -4,9 +4,16 @@
 #include <vector>
 #include <string>
 #include <string_view>
+#include <sstream>
 #include <iostream>
 
 namespace {
+    void write_to_file(const std::string& filename, const std::string&
+contents) {
+        std::ofstream out(filename);
+        out << contents;
+    }
+
     std::string read_file(const std::string& file_name) {
         std::ifstream ifs(file_name, std::ios::in | std::ios::binary);
         ifs.seekg(0, std::ios::end);
@@ -30,39 +37,68 @@ namespace {
         return output;
     }
 
-    std::vector<std::string_view> tree_to_lines(const std::string_view input) {
-        return split(input, "\r\n");
+    struct filename_t {
+        std::string_view base;
+        std::string_view dot;
+        std::string_view ext;
+    };
+    
+    filename_t get_filename(const std::string_view filename) {
+        filename_t output;
+        std::string_view::size_type pos = filename.find_last_of(".");
+        output.base = pos != std::string_view::npos ?
+filename.substr(0, pos) : filename;
+        output.dot = pos != std::string_view::npos ?
+filename.substr(pos, 1) : std::string_view();
+        output.ext = pos != std::string_view::npos ?
+filename.substr(pos + 1, filename.size() - pos) : filename;
+        return output;
     }
     
-    std::string_view to_filename(const std::vector<std::string_view>& parts) {
-        return parts.size() > 0 ? parts[parts.size() - 1] : "";
+    std::vector<std::string_view> get_dirs(const
+std::vector<std::string_view>& parts) {
+        std::vector<std::string_view> output(parts);
+        if(!parts.empty()) {
+            output.pop_back();
+        }
+        return output;
     }
-
-    std::string_view to_extension(const std::string_view str) {
-        assert(false);
+    
+    std::string_view get_file(const std::vector<std::string_view>& parts) {
+        if(!parts.empty()) {
+            return parts.back();
+        }
+        return std::string_view();
     }
-
-    std::string_view to_basename(const std::string_view str) {
-        assert(false);
-    }
-
-    std::vector<std::string_view> parts_to_dirs(const std::vector<std::string_view> parts) {
-        assert(false);
-    }
+    
+    struct build_cmake {
+        std::ostringstream ss;
+        const std::string project_pr;
+        const std::string project_ep;
+        const std::string compilation_pr;
+        const std::string compilation_ep;
+        void add_project(const std::string& name) {
+            ss << project_pr;
+            ss << name;
+            ss << project_ep;
+        }
+        void add_compilation(const std::vector<std::string_view>& files) {
+            ss << compilation_pr;
+            std::for_each(files.cbegin(), files.cend(), [this](const
+auto& file) { ss << file; });
+            ss << compilation_ep;
+        }
+    };
 
     struct file {
         file(const std::string_view line)
         : parts(split(line, "/")) 
-        , dirs(parts_to_dirs(parts))
-        , filename(to_filename(parts))
-        , basefilename(to_basename(filename))
-        , extension(filename) {
+        , dirs(get_dirs(parts))
+        , filename(get_filename(get_file(parts))) {
         }
         const std::vector<std::string_view> parts;
         std::vector<std::string_view> dirs;
-        std::string_view filename;
-        std::string_view basefilename;
-        std::string_view extension;
+        const filename_t filename;
     };
 
     std::vector<file> lines_to_files(const std::vector<std::string_view>& lines) {
@@ -75,9 +111,5 @@ namespace {
 int main()
 {
     const std::string tree = read_file("tree");
-    const auto lines = tree_to_lines(tree);
-    const auto files = lines_to_files(lines);
-    for(auto x: lines) {
-    }
     return 0;
 }
