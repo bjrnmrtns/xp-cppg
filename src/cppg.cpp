@@ -6,6 +6,7 @@
 #include <string_view>
 #include <sstream>
 #include <iostream>
+#include <absl/types/span.h>
 
 namespace {
     void write_to_file(const std::string& filename, const std::string&
